@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: C:\Program Files\kompose\kompose.exe -f docker-compose.yml -f docker-compose.prod.yml
+      convert
+    kompose.version: 1.17.0 (a74acad)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: streamsets
+  name: streamsets
+spec:
+  ports:
+  - name: "18630"
+    port: 18630
+    targetPort: 18630
+  selector:
+    io.kompose.service: streamsets
+status:
+  loadBalancer: {}
