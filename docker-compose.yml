@@ -1,0 +1,122 @@
+version: '3'
+
+services:
+
+# TODO : ajouter les fichiers configs dans le dockerfile
+
+# ***** SPARK *****
+  jupyter:
+    image: jupyter/all-spark-notebook
+    ports:
+      - 8888:8888
+      - 4040:4040
+    volumes:
+      - ./jupyter/notebooks/:/home/jovyan/notebooks/
+    networks:
+      - kafkanet
+    labels: 
+      kompose.service.type: nodeport
+
+# ***** STREAMSETS *****
+  streamsets:
+    image: streamsets/datacollector
+    ports:
+      - 18630:18630
+    environment:
+      KAFKA_BROKER: kafka
+    networks:
+      - kafkanet
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka-rest
+
+# ***** ZOOKEEPER *****
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      zk_id: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - kafkanet
+
+# ***** KAFKA *****
+  kafka:
+    build: ./kafka/
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms512M"
+    networks:
+      - kafkanet
+
+# ***** KAFKA-REST *****
+  kafka-rest:
+    image: confluentinc/cp-kafka-rest
+    depends_on:
+      - zookeeper
+      - kafka
+    environment:
+      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_REST_HOST_NAME: kafka-rest
+      KAFKA_REST_LISTENERS: http://0.0.0.0:8082
+      KAFKA_REST_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - kafkanet
+
+# ***** ELASTICSEARCH *****
+  elasticsearch:
+    build:
+      context: ./elasticsearch/
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: pwd
+    networks:
+      - kafkanet
+
+# ***** KIBANA *****
+  kibana:
+    build:
+      context: ./kibana/
+    ports:
+      - 5601:5601
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - kafkanet
+    depends_on:
+      - elasticsearch
+      - kafka    
+    labels: 
+      kompose.service.type: nodeport
+
+# ***** LOGSTASH *****
+  logstash:
+    build:
+      context: ./logstash/
+    ports:
+      - 5000:5000
+    volumes:
+      - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - kafkanet
+    depends_on:
+      - elasticsearch
+
+networks:
+  kafkanet:

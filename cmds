@@ -1,0 +1,21 @@
+
+# https://docs.confluent.io/current/installation/docker/docs/installation/single-node-client.html
+
+docker exec -it <container-id> bash
+
+# Create topic
+docker-compose exec kafka kafka-topics --create --topic topic1 --partitions 1 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181
+
+# Describe topics
+docker-compose exec kafka kafka-topics --describe --topic topic1 --zookeeper zookeeper:2181
+
+# Consume
+docker-compose exec kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic topic1 --from-beginning
+
+# Schema registry
+docker-compose exec schema_registry kafka-avro-console-producer \
+  --broker-list kafka:9092 --topic bar \
+  --property value.schema='{"type":"record","name":"myrecord","fields":[{"name":"f1","type":"string"}]}'
+
+docker-compose exec schema_registry kafka-avro-console-consumer -bootstrap-server kafka:9092 --from-beginning --topic NAME
+docker-compose exec schema_registry kafka-avro-console-consumer -bootstrap-server kafka:9092 --from-beginning --topic Page
