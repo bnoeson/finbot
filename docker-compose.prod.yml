@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+
+# ***** STREAMSETS *****
+  streamsets:
+    environment:
+      - APP_ENV=prod
+    volumes:
+      - sdc-data:/data
+      - sdc-stagelibs:/opt/streamsets-datacollector-3.5.1/streamsets-libs
+
+# ***** ZOOKEEPER *****
+  zookeeper:
+    environment:
+      - APP_ENV=prod
+
+# ***** KAFKA *****
+  kafka:
+    environment:
+      - APP_ENV=prod
+
+# ***** KAFKA-REST *****
+  kafka-rest:
+    environment:
+      - APP_ENV=prod
+
+# ***** ELASTICSEARCH *****
+  elasticsearch:
+    environment:
+      - ELASTIC_PASSWORD=pwd
+      - APP_ENV=prod
+
+# ***** KIBANA *****
+  kibana:
+    environment:
+      - APP_ENV=prod
+
+# ***** LOGSTASH *****
+  logstash:
+    environment:
+      - APP_ENV=prod
+
+volumes:
+  sdc-stagelibs:
+  sdc-data:

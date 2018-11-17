@@ -1,0 +1,67 @@
+version: '3'
+
+services:
+
+# ***** SPARK *****
+  jupyter:
+    image: jupyter/all-spark-notebook
+    ports:
+      - 8888:8888
+      - 4040:4040
+    volumes:
+      - ./jupyter/notebooks/:/home/jovyan/notebooks/
+    labels: 
+      kompose.service.type: nodeport
+
+# ***** STREAMSETS *****
+  streamsets:
+    environment:
+      - APP_ENV=dev
+    volumes:
+      - sdc-dev-data:/data
+      - sdc-dev-stagelibs:/opt/streamsets-datacollector-3.5.1/streamsets-libs
+
+# ***** ZOOKEEPER *****
+  zookeeper:
+    environment:
+      - APP_ENV=dev
+
+# ***** KAFKA *****
+  kafka:
+    environment:
+      - APP_ENV=dev
+
+# ***** KAFKA-REST *****
+  kafka-rest:
+    environment:
+      - APP_ENV=dev
+
+# ***** ELASTICSEARCH *****
+  elasticsearch:
+    volumes:
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    environment:
+      - ELASTIC_PASSWORD=pwd
+      - APP_ENV=dev
+
+# ***** KIBANA *****
+  kibana:
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    environment:
+      - APP_ENV=dev
+
+# ***** LOGSTASH *****
+  logstash:
+    volumes:
+      - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    environment:
+      - APP_ENV=dev
+
+networks:
+  kafkanet:
+
+volumes:
+  sdc-dev-stagelibs:
+  sdc-dev-data:
