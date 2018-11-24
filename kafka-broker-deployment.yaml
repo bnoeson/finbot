@@ -2,8 +2,8 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: C:\Program Files\kompose\kompose.exe -f docker-compose.yml -f docker-compose.prod.yml
-      convert
+    kompose.cmd: C:\Program Files\kompose\kompose.exe convert -f docker-compose.yml
+      -f docker-compose.override.yml
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
@@ -21,16 +21,31 @@ spec:
       containers:
       - env:
         - name: APP_ENV
-          value: prod
+          valueFrom:
+            configMapKeyRef:
+              key: APP_ENV
+              name: kafka-broker-env--env-kafkabroker-dev
         - name: KAFKA_ADVERTISED_LISTENERS
-          value: PLAINTEXT://kafka-broker:9092
+          valueFrom:
+            configMapKeyRef:
+              key: KAFKA_ADVERTISED_LISTENERS
+              name: kafka-broker-env--env-kafkabroker-dev
         - name: KAFKA_HEAP_OPTS
-          value: -Xmx512M -Xms512M
+          valueFrom:
+            configMapKeyRef:
+              key: KAFKA_HEAP_OPTS
+              name: kafka-broker-env--env-kafkabroker-dev
         - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
-          value: "1"
+          valueFrom:
+            configMapKeyRef:
+              key: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              name: kafka-broker-env--env-kafkabroker-dev
         - name: KAFKA_ZOOKEEPER_CONNECT
-          value: zookeeper:2181
-        image: bnoeson1.azurecr.io/finbot_kafka
+          valueFrom:
+            configMapKeyRef:
+              key: KAFKA_ZOOKEEPER_CONNECT
+              name: kafka-broker-env--env-kafkabroker-dev
+        image: bnoeson/finbot_kafka
         name: kafka-broker
         ports:
         - containerPort: 9092

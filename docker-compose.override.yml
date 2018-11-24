@@ -4,6 +4,7 @@ services:
 
 # ***** SPARK *****
   jupyter:
+    container_name: jupyter
     image: jupyter/all-spark-notebook
     ports:
       - 8888:8888
@@ -11,66 +12,52 @@ services:
     volumes:
       - ./jupyter/notebooks/:/home/jovyan/notebooks/
     labels: 
-      kompose.service.type: nodeport
+      kompose.service.type: loadbalancer
 
 # ***** STREAMSETS *****
   streamsets:
-    environment:
-      - APP_ENV=dev
-      - KAFKA_BROKER=kafka-broker #
+    env_file:
+    - ./env/.env.streamsets.dev
     volumes:
       - sdc-dev-data:/data
       - sdc-dev-stagelibs:/opt/streamsets-datacollector-3.5.1/streamsets-libs
 
 # ***** ZOOKEEPER *****
   zookeeper:
-    environment:
-      - APP_ENV=dev
-      - zk_id=1 #
-      - ZOOKEEPER_CLIENT_PORT=2181 #
+    env_file:
+    - ./env/.env.zookeeper.dev
 
 # ***** KAFKA *****
   kafka-broker:
-    environment:
-      - APP_ENV=dev
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 #
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-broker:9092 #
-      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 #
-      - KAFKA_HEAP_OPTS=-Xmx512M -Xms512M #
+    env_file:
+    - ./env/.env.kafkabroker.dev
 
 # ***** KAFKA-REST *****
   kafka-rest:
-    environment:
-      - APP_ENV=dev
-      - KAFKA_REST_ZOOKEEPER_CONNECT=zookeeper:2181 #
-      - KAFKA_REST_HOST_NAME=kafka-rest #
-      - KAFKA_REST_LISTENERS=http://0.0.0.0:8082 #
-      - KAFKA_REST_BOOTSTRAP_SERVERS=kafka-broker:9092 #
+    env_file:
+    - ./env/.env.kafkarest.dev
 
 # ***** ELASTICSEARCH *****
   elasticsearch:
+    env_file:
+    - ./env/.env.elasticsearch.dev
     volumes:
       - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-    environment:
-      - ELASTIC_PASSWORD=pwd
-      - APP_ENV=dev
-      - ES_JAVA_OPTS=-Xmx256m -Xms256m #
 
 # ***** KIBANA *****
   kibana:
+    env_file:
+    - ./env/.env.kibana.dev
     volumes:
       - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-    environment:
-      - APP_ENV=dev
 
 # ***** LOGSTASH *****
   logstash:
+    env_file:
+    - ./env/.env.streamsets.dev
     volumes:
       - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
       - ./logstash/pipeline:/usr/share/logstash/pipeline
-    environment:
-      - APP_ENV=dev
-      - LS_JAVA_OPTS=-Xmx256m -Xms256m #
 
 networks:
   kafkanet:

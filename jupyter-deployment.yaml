@@ -8,8 +8,8 @@ metadata:
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
-    io.kompose.service: kibana
-  name: kibana
+    io.kompose.service: jupyter
+  name: jupyter
 spec:
   replicas: 1
   strategy: {}
@@ -17,19 +17,14 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: kibana
+        io.kompose.service: jupyter
     spec:
       containers:
-      - env:
-        - name: APP_ENV
-          valueFrom:
-            configMapKeyRef:
-              key: APP_ENV
-              name: kibana-env--env-kibana-dev
-        image: bnoeson/finbot_kibana
-        name: kibana
+      - image: jupyter/all-spark-notebook
+        name: jupyter
         ports:
-        - containerPort: 5601
+        - containerPort: 8888
+        - containerPort: 4040
         resources: {}
       restartPolicy: Always
 status: {}

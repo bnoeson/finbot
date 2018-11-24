@@ -2,8 +2,8 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: C:\Program Files\kompose\kompose.exe -f docker-compose.yml -f docker-compose.prod.yml
-      convert
+    kompose.cmd: C:\Program Files\kompose\kompose.exe convert -f docker-compose.yml
+      -f docker-compose.override.yml
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
@@ -21,11 +21,20 @@ spec:
       containers:
       - env:
         - name: APP_ENV
-          value: prod
+          valueFrom:
+            configMapKeyRef:
+              key: APP_ENV
+              name: zookeeper-env--env-zookeeper-dev
         - name: ZOOKEEPER_CLIENT_PORT
-          value: "2181"
+          valueFrom:
+            configMapKeyRef:
+              key: ZOOKEEPER_CLIENT_PORT
+              name: zookeeper-env--env-zookeeper-dev
         - name: zk_id
-          value: "1"
+          valueFrom:
+            configMapKeyRef:
+              key: zk_id
+              name: zookeeper-env--env-zookeeper-dev
         image: confluentinc/cp-zookeeper
         name: zookeeper
         ports:

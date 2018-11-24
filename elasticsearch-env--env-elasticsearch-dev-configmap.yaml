@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  APP_ENV: dev
+  ELASTIC_PASSWORD: pwd
+  ES_JAVA_OPTS: -Xmx256m -Xms256m
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: elasticsearch-env--env-elasticsearch-dev
+  name: elasticsearch-env--env-elasticsearch-dev

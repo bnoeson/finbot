@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  APP_ENV: dev
+  KAFKA_REST_BOOTSTRAP_SERVERS: kafka-broker:9092
+  KAFKA_REST_HOST_NAME: kafka-rest
+  KAFKA_REST_LISTENERS: http://0.0.0.0:8082
+  KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: kafka-rest-env--env-kafkarest-dev
+  name: kafka-rest-env--env-kafkarest-dev

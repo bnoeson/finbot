@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  APP_ENV: dev
+  KAFKA_BROKER: kafka-broker
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: logstash-env--env-streamsets-dev
+  name: logstash-env--env-streamsets-dev

@@ -2,8 +2,8 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: C:\Program Files\kompose\kompose.exe -f docker-compose.yml -f docker-compose.prod.yml
-      convert
+    kompose.cmd: C:\Program Files\kompose\kompose.exe convert -f docker-compose.yml
+      -f docker-compose.override.yml
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
@@ -21,10 +21,16 @@ spec:
       containers:
       - env:
         - name: APP_ENV
-          value: prod
-        - name: LS_JAVA_OPTS
-          value: -Xmx256m -Xms256m
-        image: bnoeson1.azurecr.io/finbot_logstash
+          valueFrom:
+            configMapKeyRef:
+              key: APP_ENV
+              name: logstash-env--env-streamsets-dev
+        - name: KAFKA_BROKER
+          valueFrom:
+            configMapKeyRef:
+              key: KAFKA_BROKER
+              name: logstash-env--env-streamsets-dev
+        image: bnoeson/finbot_logstash
         name: logstash
         ports:
         - containerPort: 5000

@@ -9,6 +9,18 @@
 #  kind: Shared
 #  mountOptions: "dir_mode=0777,file_mode=0777"
 #---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: streamsets-host-path-claim
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -71,18 +83,13 @@ spec:
           exec:
             command: ["curl", "127.0.0.1:18630/public-rest/ping"]
         volumeMounts:
-        - name: data
+        - name: localvolume
           mountPath: /data
           subPath: data
-        - name: data
+        - name: localvolume
           mountPath: /opt/streamsets-datacollector-3.5.1/streamsets-libs/
           subPath: stagelibs
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: default
-      resources:
-        requests:
-          storage: 100Mi
+      volumes:
+      - name: localvolume
+        persistentVolumeClaim:
+          claimName: streamsets-host-path-claim

@@ -4,20 +4,22 @@ metadata:
   annotations:
     kompose.cmd: C:\Program Files\kompose\kompose.exe convert -f docker-compose.yml
       -f docker-compose.override.yml
+    kompose.service.type: loadbalancer
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
-    io.kompose.service: elasticsearch
-  name: elasticsearch
+    io.kompose.service: jupyter
+  name: jupyter
 spec:
   ports:
-  - name: "9200"
-    port: 9200
-    targetPort: 9200
-  - name: "9300"
-    port: 9300
-    targetPort: 9300
+  - name: "8888"
+    port: 8888
+    targetPort: 8888
+  - name: "4040"
+    port: 4040
+    targetPort: 4040
   selector:
-    io.kompose.service: elasticsearch
+    io.kompose.service: jupyter
+  type: LoadBalancer
 status:
   loadBalancer: {}
