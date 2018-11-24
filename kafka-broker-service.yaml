@@ -7,14 +7,14 @@ metadata:
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
-    io.kompose.service: streamsets
-  name: streamsets
+    io.kompose.service: kafka-broker
+  name: kafka-broker
 spec:
   ports:
-  - name: "18630"
-    port: 18630
-    targetPort: 18630
+  - name: "9092"
+    port: 9092
+    targetPort: 9092
   selector:
-    io.kompose.service: streamsets
+    io.kompose.service: kafka-broker
 status:
   loadBalancer: {}

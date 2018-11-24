@@ -22,6 +22,14 @@ spec:
       - env:
         - name: APP_ENV
           value: prod
+        - name: KAFKA_REST_BOOTSTRAP_SERVERS
+          value: kafka-broker:9092
+        - name: KAFKA_REST_HOST_NAME
+          value: kafka-rest
+        - name: KAFKA_REST_LISTENERS
+          value: http://0.0.0.0:8082
+        - name: KAFKA_REST_ZOOKEEPER_CONNECT
+          value: zookeeper:2181
         image: confluentinc/cp-kafka-rest
         name: kafka-rest
         resources: {}

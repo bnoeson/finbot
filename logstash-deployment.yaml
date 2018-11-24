@@ -22,6 +22,8 @@ spec:
       - env:
         - name: APP_ENV
           value: prod
+        - name: LS_JAVA_OPTS
+          value: -Xmx256m -Xms256m
         image: bnoeson1.azurecr.io/finbot_logstash
         name: logstash
         ports:

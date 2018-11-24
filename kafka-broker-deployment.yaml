@@ -7,8 +7,8 @@ metadata:
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
-    io.kompose.service: kafka
-  name: kafka
+    io.kompose.service: kafka-broker
+  name: kafka-broker
 spec:
   replicas: 1
   strategy: {}
@@ -16,14 +16,22 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: kafka
+        io.kompose.service: kafka-broker
     spec:
       containers:
       - env:
         - name: APP_ENV
           value: prod
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: PLAINTEXT://kafka-broker:9092
+        - name: KAFKA_HEAP_OPTS
+          value: -Xmx512M -Xms512M
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: zookeeper:2181
         image: bnoeson1.azurecr.io/finbot_kafka
-        name: kafka
+        name: kafka-broker
         ports:
         - containerPort: 9092
         resources: {}

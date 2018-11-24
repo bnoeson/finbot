@@ -4,7 +4,7 @@ metadata:
   annotations:
     kompose.cmd: C:\Program Files\kompose\kompose.exe -f docker-compose.yml -f docker-compose.prod.yml
       convert
-    kompose.service.type: nodeport
+    kompose.service.type: loadbalancer
     kompose.version: 1.17.0 (a74acad)
   creationTimestamp: null
   labels:
@@ -17,6 +17,6 @@ spec:
     targetPort: 5601
   selector:
     io.kompose.service: kibana
-  type: NodePort
+  type: LoadBalancer
 status:
   loadBalancer: {}

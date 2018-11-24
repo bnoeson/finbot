@@ -6,6 +6,7 @@ services:
   streamsets:
     environment:
       - APP_ENV=prod
+      - KAFKA_BROKER=kafka-broker #
     volumes:
       - sdc-data:/data
       - sdc-stagelibs:/opt/streamsets-datacollector-3.5.1/streamsets-libs
@@ -14,22 +15,33 @@ services:
   zookeeper:
     environment:
       - APP_ENV=prod
+      - zk_id=1
+      - ZOOKEEPER_CLIENT_PORT=2181
 
 # ***** KAFKA *****
-  kafka:
+  kafka-broker:
     environment:
       - APP_ENV=prod
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 #
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-broker:9092 #
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 #
+      - KAFKA_HEAP_OPTS=-Xmx512M -Xms512M #
 
 # ***** KAFKA-REST *****
   kafka-rest:
     environment:
       - APP_ENV=prod
+      - KAFKA_REST_ZOOKEEPER_CONNECT=zookeeper:2181 #
+      - KAFKA_REST_HOST_NAME=kafka-rest #
+      - KAFKA_REST_LISTENERS=http://0.0.0.0:8082 #
+      - KAFKA_REST_BOOTSTRAP_SERVERS=kafka-broker:9092 #
 
 # ***** ELASTICSEARCH *****
   elasticsearch:
     environment:
       - ELASTIC_PASSWORD=pwd
       - APP_ENV=prod
+      - ES_JAVA_OPTS=-Xmx256m -Xms256m #
 
 # ***** KIBANA *****
   kibana:
@@ -40,6 +52,7 @@ services:
   logstash:
     environment:
       - APP_ENV=prod
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m #
 
 volumes:
   sdc-stagelibs:

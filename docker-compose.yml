@@ -8,13 +8,15 @@ services:
     ports:
       - 18630:18630
     environment:
-      - KAFKA_BROKER=kafka
+      - KAFKA_BROKER=kafka-broker
     networks:
       - kafkanet
     depends_on:
       - zookeeper
       - kafka
       - kafka-rest
+    labels:
+      kompose.service.type: loadbalancer
 
 # ***** ZOOKEEPER *****
   zookeeper:
@@ -28,7 +30,7 @@ services:
       - kafkanet
 
 # ***** KAFKA *****
-  kafka:
+  kafka-broker:
     build: ./kafka/
     image: bnoeson1.azurecr.io/finbot_kafka
     depends_on:
@@ -37,9 +39,9 @@ services:
       - 9092:9092
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-broker:9092
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-      - KAFKA_HEAP_OPTS="-Xmx512M -Xms512M"
+      - KAFKA_HEAP_OPTS=-Xmx512M -Xms512M
     networks:
       - kafkanet
 
@@ -53,7 +55,7 @@ services:
       - KAFKA_REST_ZOOKEEPER_CONNECT=zookeeper:2181
       - KAFKA_REST_HOST_NAME=kafka-rest
       - KAFKA_REST_LISTENERS=http://0.0.0.0:8082
-      - KAFKA_REST_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_REST_BOOTSTRAP_SERVERS=kafka-broker:9092
     networks:
       - kafkanet
 
@@ -65,7 +67,7 @@ services:
       - 9200:9200
       - 9300:9300
     environment:
-      - ES_JAVA_OPTS="-Xmx256m -Xms256m"
+      - ES_JAVA_OPTS=-Xmx256m -Xms256m
       - ELASTIC_PASSWORD=pwd
     networks:
       - kafkanet
@@ -82,7 +84,7 @@ services:
       - elasticsearch
       - kafka    
     labels: 
-      kompose.service.type: nodeport
+      kompose.service.type: loadbalancer
 
 # ***** LOGSTASH *****
   logstash:
@@ -91,7 +93,7 @@ services:
     ports:
       - 5000:5000
     environment:
-      - LS_JAVA_OPTS="-Xmx256m -Xms256m"
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
     networks:
       - kafkanet
     depends_on:
