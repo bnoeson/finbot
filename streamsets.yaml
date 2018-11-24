@@ -10,6 +10,21 @@
 #  mountOptions: "dir_mode=0777,file_mode=0777"
 #---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: streamsets-config
+data:
+  APP_ENV: prod
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: streamsets-secrets
+data:
+  username: bXktYXBw
+  password: Mzk1MjgkdmRnN0pi
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: datacollector
@@ -47,6 +62,11 @@ spec:
         ports:
         - containerPort: 18630
           name: ui
+        envFrom:
+        - configMapRef:
+            name: streamsets-config
+        - secretRef:
+            name: streamsets-secrets
         readinessProbe:
           exec:
             command: ["curl", "127.0.0.1:18630/public-rest/ping"]
